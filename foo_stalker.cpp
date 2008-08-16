@@ -21,9 +21,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#include "play_callback.h"
-#include "config.h"
-#include "ltx_writer.h"
+#include "preferences.h"
 #include "initquit.h"
 
 #include "../SDK/foobar2000.h"
@@ -35,55 +33,6 @@ DECLARE_COMPONENT_VERSION
 	, "Connection to the game S.T.A.L.K.E.R.: Shadow of Chernobyl"
 	);
 
-// track change event
-const bool cfg_track_change_switch_default = true;
-static cfg_bool cfg_track_change_switch
-	( pfc::GUID_from_text("d0d89231-ca05-4ec9-bf53-f51284dd3dd5")
-	, cfg_track_change_switch_default
-	);
-const char * const cfg_track_change_message_default = "Foobar2000: %tracknumber%. %title%";
-static cfg_string cfg_track_change_message
-	( pfc::GUID_from_text("883e6696-fce1-42e1-9d49-5fc9b29bb848")
-	, cfg_track_change_message_default
-	);
-
-// pause event
-const bool cfg_pause_switch_default = true;
-static cfg_bool cfg_pause_switch
-	( pfc::GUID_from_text("cd8cdb7c-4d52-451a-b6e7-cc55a4526cc4")
-	, cfg_pause_switch_default
-	);
-const char * const cfg_pause_message_default = "Foobar2000: pause";
-static cfg_string cfg_pause_message
-	( pfc::GUID_from_text("caed806b-841f-4921-950c-6ba1d472335f")
-	, cfg_pause_message_default
-	);
-
-// stop event
-const bool cfg_stop_switch_default = true;
-static cfg_bool cfg_stop_switch
-	( pfc::GUID_from_text("4f141aa7-cb21-47ac-9c82-95b4660918ba")
-	, cfg_stop_switch_default
-	);
-const char * const cfg_stop_message_default = "Foobar2000: stop";
-static cfg_string cfg_stop_message
-	( pfc::GUID_from_text("69fe7f41-8a68-4749-b981-0a0cd3b23dca")
-	, cfg_stop_message_default
-	);
-
-// seek event
-const bool cfg_seek_switch_default = true;
-static cfg_bool cfg_seek_switch
-	( pfc::GUID_from_text("6eaff465-5fd3-429a-aab6-3b66687cf9da")
-	, cfg_seek_switch_default
-	);
-const char * const cfg_seek_message_default = "Foobar2000: seek";
-static cfg_string cfg_seek_message
-	( pfc::GUID_from_text("977ab552-b351-450e-8a7f-7f3d433d65d5")
-	, cfg_seek_message_default
-	);
-
-
 static initquit_factory_t<foo_stalker::initquit> initquit_factory;
 
-preferences_page_factory_t<foo_stalker::preferences> config_factory;
+preferences_page_factory_t<foo_stalker::preferences> preferences_factory;

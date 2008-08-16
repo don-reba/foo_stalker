@@ -27,51 +27,28 @@
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
 
-#include <vector>
-
 
 namespace foo_stalker
 {
-	//! Circular buffer of game events.
-	class event_buffer
+	class cfg
 	{
-	private:
-
-		struct game_event
-		{
-			int          id;
-			pfc::string8 text;
-			pfc::string8 type;
-
-		public:
-
-			game_event();
-
-			game_event(int id, pfc::string8 text, pfc::string8 type);
-
-			int get_id() const;
-
-			pfc::string8 get_text() const;
-
-			pfc::string8 get_type() const;
-		};
-
-	private:
-
-		std::vector<game_event> events;
-
-		int id;
-
 	public:
 
-		event_buffer();
-
-		void add_event(pfc::string8 text, pfc::string8 type);
-
-		static event_buffer & get_instance();
-
-	private:
-
-		void write_events();
+		static bool         get_track_change_switch_default();
+		static cfg_bool &   get_track_change_switch();
+		static const char * get_track_change_message_default();
+		static cfg_string & get_track_change_message();
+		static bool         get_pause_switch_default();
+		static cfg_bool &   get_pause_switch();
+		static const char * get_pause_message_default();
+		static cfg_string & get_pause_message();
+		static bool         get_stop_switch_default();
+		static cfg_bool &   get_stop_switch();
+		static const char * get_stop_message_default();
+		static cfg_string & get_stop_message();
+		static bool         get_seek_switch_default();
+		static cfg_bool &   get_seek_switch();
+		static const char * get_seek_message_default();
+		static cfg_string & get_seek_message();
 	};
 }

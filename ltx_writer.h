@@ -52,6 +52,8 @@ namespace foo_stalker
 
 		void write(pfc::string8 text);
 
+		static ltx_writer & get_instance();
+
 	private:
 
 		static HANDLE OpenLtxFile(HWND hwnd);

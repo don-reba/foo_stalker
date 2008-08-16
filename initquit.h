@@ -41,18 +41,9 @@ namespace foo_stalker
 
 	public:
 
-		key_callback(WPARAM key)
-			: key(key)
-		{
-		}
+		key_callback(WPARAM key);
 
-		void callback_run()
-		{
-			service_enum_t<keyboard_shortcut_manager> e;
-			service_ptr_t<keyboard_shortcut_manager> p;
-			while (e.next(p))
-				p->on_keydown_auto(key);
-		}
+		void callback_run();
 	};
 
 	//! Plugin initialization and destruction.
@@ -60,7 +51,7 @@ namespace foo_stalker
 	{
 	private:
 
-		bool quit;
+		static bool quit;
 
 	private:
 

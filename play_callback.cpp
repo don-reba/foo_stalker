@@ -23,40 +23,17 @@
 
 #include "play_callback.h"
 
-using namespace foo_stalker;
+#include "cfg.h"
+#include "event_buffer.h"
 
 
 //-----------------------------
 // play_callback implementation
 //-----------------------------
 
-play_callback::play_callback
-		( event_buffer & event_buffer
-		, const cfg_bool     & cfg_track_change_switch
-		, const cfg_string   & cfg_track_change_message
-		, const cfg_bool     & cfg_pause_switch
-		, const cfg_string   & cfg_pause_message
-		, const cfg_bool     & cfg_stop_switch
-		, const cfg_string   & cfg_stop_message
-		, const cfg_bool     & cfg_seek_switch
-		, const cfg_string   & cfg_seek_message
-		)
-		: event_buffer             (event_buffer)
-		, cfg_track_change_switch  (cfg_track_change_switch)
-		, cfg_track_change_message (cfg_track_change_message)
-		, cfg_pause_switch         (cfg_pause_switch)
-		, cfg_pause_message        (cfg_pause_message)
-		, cfg_stop_switch          (cfg_stop_switch)
-		, cfg_stop_message         (cfg_stop_message)
-		, cfg_seek_switch          (cfg_seek_switch)
-		, cfg_seek_message         (cfg_seek_message)
-	: id(0)
-{
-}
-
 //! Playback process is being initialized. on_playback_new_track() should be called soon after this when first file is successfully opened for decoding.
 void FB2KAPI
-play_callback::on_playback_starting
+foo_stalker::play_callback::on_playback_starting
 	( play_control::t_track_command p_command
 	, bool p_paused
 	)
@@ -65,14 +42,14 @@ play_callback::on_playback_starting
 
 //! Playback advanced to new track.
 void FB2KAPI
-play_callback::on_playback_new_track
+foo_stalker::play_callback::on_playback_new_track
 	( metadb_handle_ptr p_track
 	)
 {
-	if (cfg_track_change_switch)
+	if (foo_stalker::cfg::get_track_change_switch())
 	{
 		service_ptr_t<titleformat_object> script;
-		static_api_ptr_t<titleformat_compiler>()->compile_safe(script, cfg_track_change_message);
+		static_api_ptr_t<titleformat_compiler>()->compile_safe(script, foo_stalker::cfg::get_track_change_message());
 
 		pfc::string8 message;
 		p_track->format_title
@@ -82,43 +59,43 @@ play_callback::on_playback_new_track
 			, NULL    // p_filter
 			);
 
-		WriteEvent(message, "track_change");
+		add_event(message, "track_change");
 	}
 }
 
 //! Playback stopped.
 void FB2KAPI
-play_callback::on_playback_stop
+foo_stalker::play_callback::on_playback_stop
 	( play_control::t_stop_reason p_reason
 	)
 {
-	if (cfg_stop_switch)
-		WriteEvent(cfg_stop_message, "stop");
+	if (foo_stalker::cfg::get_stop_switch())
+		add_event(foo_stalker::cfg::get_stop_message(), "stop");
 }
 
 //! User has seeked to specific time.
 void FB2KAPI
-play_callback::on_playback_seek
+foo_stalker::play_callback::on_playback_seek
 	( double p_time
 	)
 {
-	if (cfg_seek_switch)
-		WriteEvent(cfg_seek_message, "seek");
+	if (foo_stalker::cfg::get_seek_switch())
+		add_event(foo_stalker::cfg::get_seek_message(), "seek");
 }
 
 //! Called on pause/unpause.
 void FB2KAPI
-on_playback_pause
+foo_stalker::play_callback::on_playback_pause
 	( bool p_state
 	)
 {
-	if (cfg_pause_switch)
-		WriteEvent(cfg_pause_message, "pause");
+	if (foo_stalker::cfg::get_pause_switch())
+		add_event(foo_stalker::cfg::get_pause_message(), "pause");
 }
 
 //! Called when currently played file gets edited.
 void FB2KAPI
-play_callback::on_playback_edited
+foo_stalker::play_callback::on_playback_edited
 	( metadb_handle_ptr p_track
 	)
 {
@@ -126,7 +103,7 @@ play_callback::on_playback_edited
 
 //! Dynamic info (VBR bitrate etc) change.
 void FB2KAPI
-play_callback::on_playback_dynamic_info
+foo_stalker::play_callback::on_playback_dynamic_info
 	( const file_info & p_info
 	)
 {
@@ -134,7 +111,7 @@ play_callback::on_playback_dynamic_info
 
 //! Per-track dynamic info (stream track titles etc) change. Happens less often than on_playback_dynamic_info().
 void FB2KAPI
-play_callback::on_playback_dynamic_info_track
+foo_stalker::play_callback::on_playback_dynamic_info_track
 	( const file_info & p_info
 	)
 {
@@ -142,7 +119,7 @@ play_callback::on_playback_dynamic_info_track
 
 //! Called every second, for time display
 void FB2KAPI
-play_callback::on_playback_time
+foo_stalker::play_callback::on_playback_time
 	( double p_time
 	)
 {
@@ -151,8 +128,25 @@ play_callback::on_playback_time
 //! User changed volume settings. Possibly called when not playing.
 //! @param p_new_val new volume level in dB; 0 for full volume.
 void FB2KAPI
-play_callback::on_volume_change
+foo_stalker::play_callback::on_volume_change
 	( float p_new_val
 	)
 {
+}
+
+//! Return the flags corresponding to the base class functions implemented.
+unsigned
+foo_stalker::play_callback::get_flags()
+{
+	return
+		flag_on_playback_new_track
+		| flag_on_playback_stop
+		| flag_on_playback_seek
+		| flag_on_playback_pause;
+}
+
+void
+foo_stalker::play_callback::add_event(pfc::string8 message, pfc::string8 type)
+{
+	event_buffer::get_instance().add_event(message, type);
 }

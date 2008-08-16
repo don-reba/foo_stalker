@@ -23,9 +23,6 @@
 
 #pragma once
 
-
-#include "event_buffer.h"
-
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
 
@@ -35,32 +32,7 @@ namespace foo_stalker
 	//! record the events into event_buffer
 	class play_callback : public ::play_callback
 	{
-	private:
-		
-		event_buffer & event_buffer;
-
-		const cfg_bool     & cfg_track_change_switch;
-		const cfg_string   & cfg_track_change_message;
-		const cfg_bool     & cfg_pause_switch;
-		const cfg_string   & cfg_pause_message;
-		const cfg_bool     & cfg_stop_switch;
-		const cfg_string   & cfg_stop_message;
-		const cfg_bool     & cfg_seek_switch;
-		const cfg_string   & cfg_seek_message;
-
 	public:
-
-		play_callback
-			( event_buffer & event_buffer
-			, const cfg_bool     & cfg_track_change_switch
-			, const cfg_string   & cfg_track_change_message
-			, const cfg_bool     & cfg_pause_switch
-			, const cfg_string   & cfg_pause_message
-			, const cfg_bool     & cfg_stop_switch
-			, const cfg_string   & cfg_stop_message
-			, const cfg_bool     & cfg_seek_switch
-			, const cfg_string   & cfg_seek_message
-			);
 
 		//! Playback process is being initialized. on_playback_new_track() should be called soon after this when first file is successfully opened for decoding.
 		void FB2KAPI on_playback_starting(play_control::t_track_command p_command,bool p_paused);
@@ -92,5 +64,11 @@ namespace foo_stalker
 		//! User changed volume settings. Possibly called when not playing.
 		//! @param p_new_val new volume level in dB; 0 for full volume.
 		void FB2KAPI on_volume_change(float p_new_val);
+
+		static unsigned get_flags();
+
+	private:
+
+		void add_event(pfc::string8 message, pfc::string8 type);
 	};
 }

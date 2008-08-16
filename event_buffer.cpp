@@ -23,6 +23,8 @@
 
 #include "event_buffer.h"
 
+#include "ltx_writer.h"
+
 using namespace foo_stalker;
 
 
@@ -30,13 +32,9 @@ using namespace foo_stalker;
 // game_event_buffer implementation
 //---------------------------------
 	
-event_buffer::event_buffer
-	( int          size
-	, ltx_writer & writer
-	)
-	: events (size)
+event_buffer::event_buffer()
+	: events (8)
 	, id     (0)
-	, writer (writer)
 {
 }
 
@@ -67,6 +65,8 @@ event_buffer::write_events
 		text << "type = " << events[i].get_type() << "\r\n";
 		text << "id = "   << events[i].get_id()   << "\r\n";
 	}
+
+	ltx_writer & writer = ltx_writer::get_instance();
 
 	writer.reset();
 	writer.write(text);
@@ -113,4 +113,11 @@ event_buffer::game_event::get_type
 	() const
 {
 	return type;
+}
+
+foo_stalker::event_buffer &
+foo_stalker::event_buffer::get_instance()
+{
+	static event_buffer event_buffer;
+	return event_buffer;
 }

@@ -163,3 +163,10 @@ HANDLE ltx_writer::OpenLtxFile(HWND hwnd)
 	}
 	return handle;
 }
+
+foo_stalker::ltx_writer &
+foo_stalker::ltx_writer::get_instance()
+{
+	static ltx_writer ltx_writer;
+	return ltx_writer;
+}

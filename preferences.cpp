@@ -22,48 +22,12 @@
 
 
 #include "preferences.h"
+
+#include "cfg.h"
 #include "resource.h"
 
 using namespace foo_stalker;
 
-
-preferences::preferences
-		( const bool cfg_pause_switch_default
-		, const bool cfg_seek_switch_default
-		, const bool cfg_stop_switch_default
-		, const bool cfg_track_change_switch_default
-		, const char * const cfg_pause_message_default
-		, const char * const cfg_seek_message_default
-		, const char * const cfg_stop_message_default
-		, const char * const cfg_track_change_message_default
-		, const cfg_bool & cfg_pause_switch
-		, const cfg_bool & cfg_seek_switch
-		, const cfg_bool & cfg_stop_switch
-		, const cfg_bool & cfg_track_change_switch
-		, const cfg_string & cfg_pause_message
-		, const cfg_string & cfg_seek_message
-		, const cfg_string & cfg_stop_message
-		, const cfg_string & cfg_track_change_message
-		)
-		: cfg_pause_switch_default         (cfg_pause_switch_default)
-		, cfg_seek_switch_default          (cfg_seek_switch_default)
-		, cfg_stop_switch_default          (cfg_stop_switch_default)
-		, cfg_track_change_switch_default  (cfg_track_change_switch_default)
-		, cfg_pause_message_default        (cfg_pause_message_default)
-		, cfg_seek_message_default         (cfg_seek_message_default)
-		, cfg_stop_message_default         (cfg_stop_message_default)
-		, cfg_track_change_message_default (cfg_track_change_message_default)
-		, cfg_pause_switch                 (cfg_pause_switch)
-		, cfg_seek_switch                  (cfg_seek_switch)
-		, cfg_stop_switch                  (cfg_stop_switch)
-		, cfg_track_change_switch          (cfg_track_change_switch)
-		, cfg_pause_message                (cfg_pause_message)
-		, cfg_seek_message                 (cfg_seek_message)
-		, cfg_stop_message                 (cfg_stop_message)
-		, cfg_track_change_message         (cfg_track_change_message)
-
-{
-}
 
 HWND
 preferences::create
@@ -74,7 +38,7 @@ preferences::create
 };
 
 const char *
-get_name
+preferences::get_name
 	()
 {
     return "S.T.A.L.K.E.R. Connection";
@@ -105,17 +69,17 @@ void
 preferences::reset
 	()
 {
-	cfg_track_change_switch  = cfg_track_change_switch_default;
-	cfg_track_change_message = cfg_track_change_message_default;
+	cfg::get_track_change_switch()  = cfg::get_track_change_switch_default();
+	cfg::get_track_change_message() = cfg::get_track_change_message_default();
 
-	cfg_pause_switch         = cfg_pause_switch_default;
-	cfg_pause_message        = cfg_pause_message_default;
+	cfg::get_pause_switch()         = cfg::get_pause_switch_default();
+	cfg::get_pause_message()        = cfg::get_pause_message_default();
 
-	cfg_stop_switch          = cfg_stop_switch_default;
-	cfg_stop_message         = cfg_stop_message_default;
+	cfg::get_stop_switch()          = cfg::get_stop_switch_default();
+	cfg::get_stop_message()         = cfg::get_stop_message_default();
 
-	cfg_seek_switch          = cfg_seek_switch_default;
-	cfg_seek_message         = cfg_seek_message_default;
+	cfg::get_seek_switch()          = cfg::get_seek_switch_default();
+	cfg::get_seek_message()         = cfg::get_seek_message_default();
 };
 
 BOOL CALLBACK
@@ -130,15 +94,15 @@ preferences::ConfigProc
     {
         case WM_INITDIALOG:
         {
-			::uSetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg_track_change_message);
-			::uSetDlgItemText(wnd, IDC_PAUSE_MESSAGE,        cfg_pause_message);
-			::uSetDlgItemText(wnd, IDC_STOP_MESSAGE,         cfg_stop_message);
-			::uSetDlgItemText(wnd, IDC_SEEK_MESSAGE,         cfg_seek_message);
+			::uSetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
+			::uSetDlgItemText(wnd, IDC_PAUSE_MESSAGE,        cfg::get_pause_message());
+			::uSetDlgItemText(wnd, IDC_STOP_MESSAGE,         cfg::get_stop_message());
+			::uSetDlgItemText(wnd, IDC_SEEK_MESSAGE,         cfg::get_seek_message());
 
-			::SendDlgItemMessage(wnd, IDC_TRACK_CHANGE_SWITCH, BM_SETCHECK,  cfg_track_change_switch ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_PAUSE_SWITCH,        BM_SETCHECK,  cfg_pause_switch        ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_STOP_SWITCH,         BM_SETCHECK,  cfg_stop_switch         ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_SEEK_SWITCH,         BM_SETCHECK,  cfg_seek_switch         ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_TRACK_CHANGE_SWITCH, BM_SETCHECK,  cfg::get_track_change_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_PAUSE_SWITCH,        BM_SETCHECK,  cfg::get_pause_switch()        ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_STOP_SWITCH,         BM_SETCHECK,  cfg::get_stop_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_SEEK_SWITCH,         BM_SETCHECK,  cfg::get_seek_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
         } break;
         case WM_COMMAND:
         {
@@ -148,28 +112,28 @@ preferences::ConfigProc
 				{
                     if (HIWORD(wp)==EN_UPDATE)
                     {
-                        uGetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg_track_change_message);
+                        uGetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
                     }
 				} break;
                 case IDC_PAUSE_MESSAGE:
 				{
                     if (HIWORD(wp)==EN_UPDATE)
                     {
-                        uGetDlgItemText(wnd, IDC_PAUSE_MESSAGE, cfg_pause_message);
+                        uGetDlgItemText(wnd, IDC_PAUSE_MESSAGE, cfg::get_pause_message());
                     }
 				} break;
                 case IDC_STOP_MESSAGE:
 				{
                     if (HIWORD(wp)==EN_UPDATE)
                     {
-						uGetDlgItemText(wnd, IDC_STOP_MESSAGE, cfg_stop_message);
+						uGetDlgItemText(wnd, IDC_STOP_MESSAGE, cfg::get_stop_message());
                     }
 				} break;
                 case IDC_SEEK_MESSAGE:
 				{
                     if (HIWORD(wp)==EN_UPDATE)
                     {
-                        uGetDlgItemText(wnd, IDC_SEEK_MESSAGE, cfg_seek_message);
+                        uGetDlgItemText(wnd, IDC_SEEK_MESSAGE, cfg::get_seek_message());
                     }
 				} break;
             }
