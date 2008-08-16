@@ -23,13 +23,12 @@
 
 #include "ltx_writer.h"
 
-#include <process.h>
 #include <conio.h>
 #include <Psapi.h>
 #include <strsafe.h>
 #include <shlwapi.h>
 
-using foo_stalker;
+using namespace foo_stalker;
 
 //--------------------------
 // ltx_writer implementation
@@ -99,7 +98,7 @@ void ltx_writer::write(pfc::string8 text)
 	}
 }
 
-static HANDLE ltx_writer::OpenLtxFile(HWND hwnd)
+HANDLE ltx_writer::OpenLtxFile(HWND hwnd)
 {
 	DWORD process_id(0);
 	::GetWindowThreadProcessId(hwnd, &process_id);

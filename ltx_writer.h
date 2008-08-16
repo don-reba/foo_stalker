@@ -44,7 +44,7 @@ namespace foo_stalker
 
 		~ltx_writer();
 
-		void open(HWND hwnd)
+		void open(HWND hwnd);
 
 		void close();
 

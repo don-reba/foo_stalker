@@ -27,23 +27,53 @@
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
 
+const bool cfg_track_change_switch_default = true;
+const char * const cfg_track_change_message_default = "Foobar2000: %tracknumber%. %title%";
 
 namespace foo_stalker
 {
 	//! Preferences page for foo_stalker.
-	class config : public preferences_page
+	class preferences : public preferences_page
 	{
+	private:
+
+		const bool cfg_pause_switch_default;
+		const bool cfg_seek_switch_default;
+		const bool cfg_stop_switch_default;
+		const bool cfg_track_change_switch_default;
+		const char * const cfg_pause_message_default;
+		const char * const cfg_seek_message_default;
+		const char * const cfg_stop_message_default;
+		const char * const cfg_track_change_message_default;
+
+		const cfg_bool & cfg_pause_switch;
+		const cfg_bool & cfg_seek_switch;
+		const cfg_bool & cfg_stop_switch;
+		const cfg_bool & cfg_track_change_switch;
+		const cfg_string & cfg_pause_message;
+		const cfg_string & cfg_seek_message;
+		const cfg_string & cfg_stop_message;
+		const cfg_string & cfg_track_change_message;
+
 	public:
 
-		config
-			( const cfg_bool     & cfg_track_change_switch
-			, const cfg_string   & cfg_track_change_message
-			, const cfg_bool     & cfg_pause_switch
-			, const cfg_string   & cfg_pause_message
-			, const cfg_bool     & cfg_stop_switch
-			, const cfg_string   & cfg_stop_message
-			, const cfg_bool     & cfg_seek_switch
-			, const cfg_string   & cfg_seek_message
+		preferences
+			( const bool cfg_pause_switch_default
+			, const bool cfg_seek_switch_default
+			, const bool cfg_stop_switch_default
+			, const bool cfg_track_change_switch_default
+			, const char * const cfg_pause_message_default
+			, const char * const cfg_seek_message_default
+			, const char * const cfg_stop_message_default
+			, const char * const cfg_track_change_message_default
+			, const cfg_bool & cfg_pause_switch
+			, const cfg_bool & cfg_seek_switch
+			, const cfg_bool & cfg_stop_switch
+			, const cfg_bool & cfg_track_change_switch
+			, const cfg_string & cfg_pause_message
+			, const cfg_string & cfg_seek_message
+			, const cfg_string & cfg_stop_message
+			, const cfg_string & cfg_track_change_message
 			);
 
 		//! Creates preferences page dialog window. It is safe to assume that two dialog instances will never coexist. Caller is responsible for embedding it into preferences dialog itself.

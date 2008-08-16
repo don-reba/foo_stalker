@@ -23,7 +23,7 @@
 
 #include "play_callback.h"
 
-using foo_stalker;
+using namespace foo_stalker;
 
 
 //-----------------------------

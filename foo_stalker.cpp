@@ -84,28 +84,6 @@ static cfg_string cfg_seek_message
 	);
 
 
-class key_callback : public main_thread_callback
-{
-private:
-
-	WPARAM key;
-
-public:
-
-	key_callback(WPARAM key)
-		: key(key)
-	{
-	}
-
-	void callback_run()
-	{
-		service_enum_t<keyboard_shortcut_manager> e;
-		service_ptr_t<keyboard_shortcut_manager> p;
-		while (e.next(p))
-			p->on_keydown_auto(key);
-	}
-};
-
 static initquit_factory_t<foo_stalker::initquit> initquit_factory;
 
-preferences_page_factory_t<foo_stalker::config> config_factory;
+preferences_page_factory_t<foo_stalker::preferences> config_factory;

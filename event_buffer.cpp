@@ -21,9 +21,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#include "game_event_buffer.h"
+#include "event_buffer.h"
 
-using game_event;
+using namespace foo_stalker;
 
 
 //---------------------------------
@@ -31,10 +31,12 @@ using game_event;
 //---------------------------------
 	
 event_buffer::event_buffer
-	( int size
+	( int          size
+	, ltx_writer & writer
 	)
 	: events (size)
 	, id     (0)
+	, writer (writer)
 {
 }
 
@@ -44,9 +46,9 @@ event_buffer::add_event
 	, pfc::string8 type
 	)
 {
-	events[id % events.size()] = GameEvent(id, text, type);
+	events[id % events.size()] = game_event(id, text, type);
 	++id;
-	WriteEvents();
+	write_events();
 }
 
 void
@@ -61,9 +63,9 @@ event_buffer::write_events
 	for (int i = 0; i != events.size(); ++i)
 	{
 		text << "[event@" << i << "]\r\n";
-		text << "text = " << events[i].GetText() << "\r\n";
-		text << "type = " << events[i].GetType() << "\r\n";
-		text << "id = "   << events[i].GetID()   << "\r\n";
+		text << "text = " << events[i].get_text() << "\r\n";
+		text << "type = " << events[i].get_type() << "\r\n";
+		text << "id = "   << events[i].get_id()   << "\r\n";
 	}
 
 	writer.reset();
@@ -77,13 +79,14 @@ event_buffer::write_events
 event_buffer::game_event::game_event
 	()
 	: id   (-1)
-	: text ()
-	: type ()
+	, text ()
+	, type ()
 {
 }
 
 event_buffer::game_event::game_event
-	( int id, pfc::string8 text
+	( int id
+	, pfc::string8 text
 	, pfc::string8 type
 	)
 	: id   (id)

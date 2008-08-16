@@ -24,6 +24,8 @@
 #pragma once
 
 
+#include "event_buffer.h"
+
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
 

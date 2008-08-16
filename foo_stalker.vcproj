@@ -173,7 +173,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\config.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\event_buffer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\foo_stalker.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\initquit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ltx_writer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\play_callback.cpp"
 				>
 			</File>
 		</Filter>
@@ -182,6 +202,26 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\config.h"
+				>
+			</File>
+			<File
+				RelativePath=".\event_buffer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\initquit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ltx_writer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\play_callback.h"
+				>
+			</File>
 			<File
 				RelativePath=".\resource.h"
 				>

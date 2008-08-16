@@ -21,35 +21,52 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#include "config.h"
+#include "preferences.h"
 #include "resource.h"
 
-using foo_stalker;
+using namespace foo_stalker;
 
 
-config::config
-		( const cfg_bool     & cfg_track_change_switch
-		, const cfg_string   & cfg_track_change_message
-		, const cfg_bool     & cfg_pause_switch
-		, const cfg_string   & cfg_pause_message
-		, const cfg_bool     & cfg_stop_switch
-		, const cfg_string   & cfg_stop_message
-		, const cfg_bool     & cfg_seek_switch
-		, const cfg_string   & cfg_seek_message
+preferences::preferences
+		( const bool cfg_pause_switch_default
+		, const bool cfg_seek_switch_default
+		, const bool cfg_stop_switch_default
+		, const bool cfg_track_change_switch_default
+		, const char * const cfg_pause_message_default
+		, const char * const cfg_seek_message_default
+		, const char * const cfg_stop_message_default
+		, const char * const cfg_track_change_message_default
+		, const cfg_bool & cfg_pause_switch
+		, const cfg_bool & cfg_seek_switch
+		, const cfg_bool & cfg_stop_switch
+		, const cfg_bool & cfg_track_change_switch
+		, const cfg_string & cfg_pause_message
+		, const cfg_string & cfg_seek_message
+		, const cfg_string & cfg_stop_message
+		, const cfg_string & cfg_track_change_message
 		)
-		: cfg_track_change_switch  (cfg_track_change_switch)
-		, cfg_track_change_message (cfg_track_change_message)
-		, cfg_pause_switch         (cfg_pause_switch)
-		, cfg_pause_message        (cfg_pause_message)
-		, cfg_stop_switch          (cfg_stop_switch)
-		, cfg_stop_message         (cfg_stop_message)
-		, cfg_seek_switch          (cfg_seek_switch)
-		, cfg_seek_message         (cfg_seek_message)
+		: cfg_pause_switch_default         (cfg_pause_switch_default)
+		, cfg_seek_switch_default          (cfg_seek_switch_default)
+		, cfg_stop_switch_default          (cfg_stop_switch_default)
+		, cfg_track_change_switch_default  (cfg_track_change_switch_default)
+		, cfg_pause_message_default        (cfg_pause_message_default)
+		, cfg_seek_message_default         (cfg_seek_message_default)
+		, cfg_stop_message_default         (cfg_stop_message_default)
+		, cfg_track_change_message_default (cfg_track_change_message_default)
+		, cfg_pause_switch                 (cfg_pause_switch)
+		, cfg_seek_switch                  (cfg_seek_switch)
+		, cfg_stop_switch                  (cfg_stop_switch)
+		, cfg_track_change_switch          (cfg_track_change_switch)
+		, cfg_pause_message                (cfg_pause_message)
+		, cfg_seek_message                 (cfg_seek_message)
+		, cfg_stop_message                 (cfg_stop_message)
+		, cfg_track_change_message         (cfg_track_change_message)
+
 {
 }
 
 HWND
-config::create
+preferences::create
 	( HWND parent
 	)
 {
@@ -64,28 +81,28 @@ get_name
 }
 
 GUID
-config::get_guid
+preferences::get_guid
 	()
 {
     return pfc::GUID_from_text("1d07f088-7b6f-4c11-abb0-72e71b72415b");
 }
 
 GUID
-config::get_parent_guid
+preferences::get_parent_guid
 	()
 {
     return preferences_page::guid_tools;
 }
 
 bool
-config::reset_query
+preferences::reset_query
 	()
 {
     return true;
 }
 
 void
-config::reset
+preferences::reset
 	()
 {
 	cfg_track_change_switch  = cfg_track_change_switch_default;
@@ -101,12 +118,13 @@ config::reset
 	cfg_seek_message         = cfg_seek_message_default;
 };
 
-static BOOL CALLBACK
-ConfigProc
+BOOL CALLBACK
+preferences::ConfigProc
 	( HWND   wnd
 	, UINT   msg
 	, WPARAM wp
-	, LPARAM lp)
+	, LPARAM lp
+	)
 {
     switch(msg)
     {

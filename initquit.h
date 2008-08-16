@@ -27,11 +27,36 @@
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
 
+#include <process.h>
+
 
 namespace foo_stalker
 {
-	//! plugin initialization and destruction
-	class initquit : public initquit
+	//! Callback for transmitting key events to keyboard_shortcut_manager on the main thread.
+	class key_callback : public main_thread_callback
+	{
+	private:
+
+		WPARAM key;
+
+	public:
+
+		key_callback(WPARAM key)
+			: key(key)
+		{
+		}
+
+		void callback_run()
+		{
+			service_enum_t<keyboard_shortcut_manager> e;
+			service_ptr_t<keyboard_shortcut_manager> p;
+			while (e.next(p))
+				p->on_keydown_auto(key);
+		}
+	};
+
+	//! Plugin initialization and destruction.
+	class initquit : public ::initquit
 	{
 	private:
 

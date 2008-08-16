@@ -24,8 +24,14 @@
 #include "initquit.h"
 #include "resource.h"
 
-using foo_stalker;
+#include "play_callback.h"
 
+using namespace foo_stalker;
+
+
+//------------------------
+// initquit implementation
+//------------------------
 
 initquit::initquit()
 	: quit(false)
@@ -115,4 +121,25 @@ initquit::on_quit
 	()
 {
 	quit = true;
+}
+
+//----------------------------
+// key_callback implementation
+//----------------------------
+
+key_callback::key_callback
+	( WPARAM key
+	)
+	: key (key)
+{
+}
+
+void
+key_callback::callback_run
+	()
+{
+	service_enum_t<keyboard_shortcut_manager> e;
+	service_ptr_t<keyboard_shortcut_manager> p;
+	while (e.next(p))
+		p->on_keydown_auto(key);
 }

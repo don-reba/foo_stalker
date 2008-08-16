@@ -24,6 +24,8 @@
 #pragma once
 
 
+#include "ltx_writer.h"
+
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
 
@@ -37,10 +39,8 @@ namespace foo_stalker
 	{
 	private:
 
-		class game_event
+		struct game_event
 		{
-		private:
-
 			int          id;
 			pfc::string8 text;
 			pfc::string8 type;
@@ -62,11 +62,13 @@ namespace foo_stalker
 
 		std::vector<game_event> events;
 
+		ltx_writer & writer;
+
 		int id;
 
 	public:
 
-		event_buffer(int size);
+		event_buffer(int size, ltx_writer & writer);
 
 		void add_event(pfc::string8 text, pfc::string8 type);
 
