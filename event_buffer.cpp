@@ -56,6 +56,7 @@ event_buffer::write_events
 	pfc::string8 text;
 
 	text << "[info]\r\n";
+	text << "format_version = 1\r\n";
 	text << "event_count = " << events.size() << "\r\n";
 	
 	for (int i = 0; i != events.size(); ++i)
