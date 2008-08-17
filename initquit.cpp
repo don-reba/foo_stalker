@@ -28,7 +28,12 @@
 #include "resource.h"
 
 
-bool foo_stalker::initquit::quit = false;
+//-----------------------------
+// static member initialization
+//-----------------------------
+
+bool foo_stalker::initquit::quit         = false;
+bool foo_stalker::initquit::was_tracking = false;
 
 //------------------------
 // initquit implementation
@@ -43,17 +48,31 @@ foo_stalker::initquit::find_game_window
 	( void *
 	)
 {
+	// was_tracking is used to make sure tracking is not triggered
+	// when the game just runs
 	console::info("foo_stalker: passive mode");
+	was_tracking = true;
 	while (!quit)
 	{
-		HWND hwnd(::FindWindow(NULL, _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl")));
-		if (NULL != hwnd && hwnd == GetForegroundWindow())
+		//HWND hwnd(::FindWindow(NULL, _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl")));
+		HWND hwnd(::FindWindow(NULL, _T("Untitled - Notepad")));
+		bool is_tracking = initquit::is_tracking();
+		if
+			(  NULL != hwnd
+			&& hwnd == GetForegroundWindow()
+			&& !was_tracking
+			&& is_tracking
+			)
 		{
 			monitor_key_state(hwnd);
 			console::info("foo_stalker: passive mode");
+			was_tracking = true;
 		}
 		else
+		{
+			was_tracking = is_tracking;
 			::Sleep(1024);
+		}
 	}
 }
 
@@ -73,28 +92,22 @@ foo_stalker::initquit::monitor_key_state
 	bool is_active = false;
 
 	bool keys[0x100] = { false };
-	while (!quit && hwnd == GetForegroundWindow())
+
+	while
+		(  !quit
+		&& hwnd == GetForegroundWindow()
+		&& is_tracking()
+		)
 	{
 		for (int i = 1; i != 0x100; ++i) 
 		{
-			const bool key_pressed = (0 != (0x8000 & GetAsyncKeyState(i)));
-			if (key_pressed && !keys[i])
+			if (i != VK_SCROLL)
 			{
-				switch (i)
-				{
-				case VK_SCROLL:
-					is_active = !is_active;
-					if (is_active)
-						console::info("STALKER key forwarding enabled");
-					else
-						console::info("STALKER key forwarding disabled");
-					break;
-				default:
-					if (is_active)
-						callback_manager->add_callback(new service_impl_t<key_callback>(i));
-				}
+				const bool key_pressed = (0 != (0x8000 & GetAsyncKeyState(i)));
+				if (key_pressed && !keys[i])
+					callback_manager->add_callback(new service_impl_t<key_callback>(i));
+				keys[i] = key_pressed;
 			}
-			keys[i] = key_pressed;
 		}
 		::Sleep(128);
 	}
@@ -123,6 +136,12 @@ foo_stalker::initquit::on_quit
 	()
 {
 	quit = true;
+}
+
+bool
+foo_stalker::initquit::is_tracking()
+{
+	return 0x1 & ::GetKeyState(VK_SCROLL);
 }
 
 //----------------------------

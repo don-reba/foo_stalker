@@ -77,7 +77,6 @@ void ltx_writer::write(pfc::string8 text)
 	insync2(cs);
 	if (INVALID_HANDLE_VALUE == ltx_file)
 	{
-		console::error("foo_stalker is trying to write a closed file");
 		return;
 	}
 	else

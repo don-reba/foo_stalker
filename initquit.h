@@ -52,12 +52,15 @@ namespace foo_stalker
 	private:
 
 		static bool quit;
+		static bool was_tracking;
 
 	private:
 
 		static void find_game_window(void *);
 
 		static void monitor_key_state(HWND hwnd);
+
+		static bool is_tracking();
 
 	public:
 
