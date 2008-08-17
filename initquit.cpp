@@ -23,6 +23,7 @@
 
 #include "initquit.h"
 
+#include "event_buffer.h"
 #include "ltx_writer.h"
 #include "play_callback.h"
 #include "resource.h"
@@ -39,23 +40,21 @@ bool foo_stalker::initquit::was_tracking = false;
 // initquit implementation
 //------------------------
 
-foo_stalker::initquit::initquit()
-{
-}
-
 void
 foo_stalker::initquit::find_game_window
 	( void *
 	)
 {
+	event_buffer::get_instance().add_event("Foobar2000: connection is enabled.", "init");
+
 	// was_tracking is used to make sure tracking is not triggered
 	// when the game just runs
 	console::info("foo_stalker: passive mode");
 	was_tracking = true;
 	while (!quit)
 	{
-		//HWND hwnd(::FindWindow(NULL, _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl")));
-		HWND hwnd(::FindWindow(NULL, _T("Untitled - Notepad")));
+		HWND hwnd(::FindWindow(NULL, _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl")));
+		//HWND hwnd(::FindWindow(NULL, _T("Untitled - Notepad")));
 		bool is_tracking = initquit::is_tracking();
 		if
 			(  NULL != hwnd
@@ -82,6 +81,7 @@ foo_stalker::initquit::monitor_key_state
 	)
 {
 	console::info("foo_stalker: active mode");
+	event_buffer::get_instance().add_event("Foobar2000: control is ON.", "control_on");
 
 	ltx_writer & writer = ltx_writer::get_instance();
 
@@ -111,6 +111,8 @@ foo_stalker::initquit::monitor_key_state
 		}
 		::Sleep(128);
 	}
+
+	event_buffer::get_instance().add_event("Foobar2000: control is OFF.", "control_off");
 
 	writer.close();
 }

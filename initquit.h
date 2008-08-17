@@ -54,6 +54,12 @@ namespace foo_stalker
 		static bool quit;
 		static bool was_tracking;
 
+	public:
+
+		void on_init();
+
+		void on_quit();
+
 	private:
 
 		static void find_game_window(void *);
@@ -61,13 +67,5 @@ namespace foo_stalker
 		static void monitor_key_state(HWND hwnd);
 
 		static bool is_tracking();
-
-	public:
-
-		initquit();
-
-		void on_init();
-
-		void on_quit();
 	};
 }
