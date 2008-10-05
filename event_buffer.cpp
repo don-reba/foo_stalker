@@ -6,7 +6,7 @@
 // 
 // • Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
 // • Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
-// • The name of foo_stalker may not be used to endorse or promote products derived from this software without specific prior written permission. 
+// • The name of foo_stalker and the names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission. 
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,8 +33,10 @@ using namespace foo_stalker;
 //---------------------------------
 	
 event_buffer::event_buffer()
-	: events (8)
-	, id     (0)
+	: events        (8)
+	, id            (0)
+	, last_slot     (0)
+	, polling_delay (2000)
 {
 }
 
@@ -44,9 +46,29 @@ event_buffer::add_event
 	, pfc::string8 type
 	)
 {
-	events[id % events.size()] = game_event(id, text, type);
+	last_slot = id % events.size();
+	events[last_slot] = game_event(id, text, type);
 	++id;
 	write_events();
+}
+
+void
+event_buffer::clear
+	()
+{
+	last_slot = 0;
+	id        = 0;
+	for (int i = 0; i != events.size(); ++i)
+		events[i] = game_event();
+	write_events();
+}
+
+void
+event_buffer::set_polling_delay
+	( int delay
+	)
+{
+	polling_delay = delay;
 }
 
 void
@@ -56,15 +78,17 @@ event_buffer::write_events
 	pfc::string8 text;
 
 	text << "[info]\r\n";
-	text << "format_version = 1\r\n";
-	text << "event_count = " << events.size() << "\r\n";
+	text << "format_version = " << 1             << "\r\n";
+	text << "event_count = "    << events.size() << "\r\n";
+	text << "last_slot = "      << last_slot     << "\r\n";
+	text << "polling_delay = "  << polling_delay << "\r\n";
 	
 	for (int i = 0; i != events.size(); ++i)
 	{
 		text << "[event@" << i << "]\r\n";
-		text << "text = " << events[i].get_text() << "\r\n";
-		text << "type = " << events[i].get_type() << "\r\n";
-		text << "id = "   << events[i].get_id()   << "\r\n";
+		text << "text = \"" << events[i].get_text() << "\"\r\n";
+		text << "type = "   << events[i].get_type() << "\r\n";
+		text << "id = "     << events[i].get_id()   << "\r\n";
 	}
 
 	ltx_writer & writer = ltx_writer::get_instance();

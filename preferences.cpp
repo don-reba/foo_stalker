@@ -6,7 +6,7 @@
 // 
 // • Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
 // • Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
-// • The name of foo_stalker may not be used to endorse or promote products derived from this software without specific prior written permission. 
+// • The name of foo_stalker and the names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission. 
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,6 +25,7 @@
 
 #include "cfg.h"
 #include "resource.h"
+#include <windowsx.h>
 
 using namespace foo_stalker;
 
@@ -41,7 +42,7 @@ const char *
 preferences::get_name
 	()
 {
-    return "S.T.A.L.K.E.R. Connection";
+    return "S.T.A.L.K.E.R. Link";
 }
 
 GUID
@@ -69,6 +70,9 @@ void
 preferences::reset
 	()
 {
+	cfg::get_slow_game_polling_delay() = cfg::get_slow_game_polling_delay_default();
+	cfg::get_fast_game_polling_delay() = cfg::get_fast_game_polling_delay_default();
+
 	cfg::get_track_change_switch()  = cfg::get_track_change_switch_default();
 	cfg::get_track_change_message() = cfg::get_track_change_message_default();
 
@@ -94,6 +98,9 @@ preferences::ConfigProc
     {
         case WM_INITDIALOG:
         {
+			::uSetDlgItemInt(wnd, IDC_SLOW_GAME_POLLING_DELAY, cfg::get_slow_game_polling_delay(), FALSE);
+			::uSetDlgItemInt(wnd, IDC_FAST_GAME_POLLING_DELAY, cfg::get_fast_game_polling_delay(), FALSE);
+
 			::uSetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
 			::uSetDlgItemText(wnd, IDC_PAUSE_MESSAGE,        cfg::get_pause_message());
 			::uSetDlgItemText(wnd, IDC_STOP_MESSAGE,         cfg::get_stop_message());
@@ -108,33 +115,85 @@ preferences::ConfigProc
         {
             switch(LOWORD(wp))
             {
-                case IDC_TRACK_CHANGE_MESSAGE:
+				case IDC_FAST_GAME_POLLING_DELAY:
 				{
-                    if (HIWORD(wp)==EN_UPDATE)
-                    {
-                        uGetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
-                    }
+					if (HIWORD(wp)==EN_UPDATE)
+					{
+						BOOL translated(FALSE);
+						int result(::uGetDlgItemInt(wnd, IDC_FAST_GAME_POLLING_DELAY, &translated, false));
+						if (translated)
+							cfg::get_fast_game_polling_delay() = result;
+					}
 				} break;
                 case IDC_PAUSE_MESSAGE:
 				{
                     if (HIWORD(wp)==EN_UPDATE)
                     {
-                        uGetDlgItemText(wnd, IDC_PAUSE_MESSAGE, cfg::get_pause_message());
+                        ::uGetDlgItemText(wnd, IDC_PAUSE_MESSAGE, cfg::get_pause_message());
                     }
 				} break;
-                case IDC_STOP_MESSAGE:
+				case IDC_PAUSE_SWITCH:
 				{
-                    if (HIWORD(wp)==EN_UPDATE)
-                    {
-						uGetDlgItemText(wnd, IDC_STOP_MESSAGE, cfg::get_stop_message());
-                    }
+					if (HIWORD(wp)==BN_CLICKED)
+					{
+						cfg::get_pause_switch() =
+							Button_GetCheck(::GetDlgItem(wnd, IDC_PAUSE_SWITCH)) == BST_CHECKED;
+					}
 				} break;
                 case IDC_SEEK_MESSAGE:
 				{
                     if (HIWORD(wp)==EN_UPDATE)
                     {
-                        uGetDlgItemText(wnd, IDC_SEEK_MESSAGE, cfg::get_seek_message());
+                        ::uGetDlgItemText(wnd, IDC_SEEK_MESSAGE, cfg::get_seek_message());
                     }
+				} break;
+				case IDC_SEEK_SWITCH:
+				{
+					if (HIWORD(wp)==BN_CLICKED)
+					{
+						cfg::get_seek_switch() =
+							Button_GetCheck(::GetDlgItem(wnd, IDC_SEEK_SWITCH)) == BST_CHECKED;
+					}
+				} break;
+				case IDC_SLOW_GAME_POLLING_DELAY:
+				{
+					if (HIWORD(wp)==EN_UPDATE)
+					{
+						BOOL translated(FALSE);
+						int result(::uGetDlgItemInt(wnd, IDC_SLOW_GAME_POLLING_DELAY, &translated, false));
+						if (translated)
+							cfg::get_slow_game_polling_delay() = result;
+					}
+				} break;
+                case IDC_STOP_MESSAGE:
+				{
+                    if (HIWORD(wp)==EN_UPDATE)
+                    {
+						::uGetDlgItemText(wnd, IDC_STOP_MESSAGE, cfg::get_stop_message());
+                    }
+				} break;
+				case IDC_STOP_SWITCH:
+				{
+					if (HIWORD(wp)==BN_CLICKED)
+					{
+						cfg::get_stop_switch() =
+							Button_GetCheck(::GetDlgItem(wnd, IDC_STOP_SWITCH)) == BST_CHECKED;
+					}
+				} break;
+                case IDC_TRACK_CHANGE_MESSAGE:
+				{
+                    if (HIWORD(wp)==EN_UPDATE)
+                    {
+						::uGetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
+                    }
+				} break;
+				case IDC_TRACK_CHANGE_SWITCH:
+				{
+					if (HIWORD(wp)==BN_CLICKED)
+					{
+						cfg::get_track_change_switch() =
+							Button_GetCheck(::GetDlgItem(wnd, IDC_TRACK_CHANGE_SWITCH)) == BST_CHECKED;
+					}
 				} break;
             }
         } break;

@@ -6,7 +6,7 @@
 // 
 // • Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
 // • Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
-// • The name of foo_stalker may not be used to endorse or promote products derived from this software without specific prior written permission. 
+// • The name of foo_stalker and the names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission. 
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,7 +29,7 @@
 
 DECLARE_COMPONENT_VERSION
 	( "S.T.A.L.K.E.R. Connection"
-	, "0.5"
+	, "1.0"
 	, "Connection to the game S.T.A.L.K.E.R.: Shadow of Chernobyl"
 	);
 

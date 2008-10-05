@@ -6,7 +6,7 @@
 // 
 // • Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
 // • Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
-// • The name of foo_stalker may not be used to endorse or promote products derived from this software without specific prior written permission. 
+// • The name of foo_stalker and the names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission. 
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,6 +23,7 @@
 
 #include "initquit.h"
 
+#include "cfg.h"
 #include "event_buffer.h"
 #include "ltx_writer.h"
 #include "play_callback.h"
@@ -45,76 +46,90 @@ foo_stalker::initquit::find_game_window
 	( void *
 	)
 {
-	event_buffer::get_instance().add_event("Foobar2000: connection is enabled.", "init");
+	const TCHAR * const window_name(_T("S.T.A.L.K.E.R.: Shadow Of Chernobyl"));
 
-	// was_tracking is used to make sure tracking is not triggered
-	// when the game just runs
-	console::info("foo_stalker: passive mode");
-	was_tracking = true;
+	ltx_writer   & writer = ltx_writer::get_instance();
+	event_buffer & events = event_buffer::get_instance();
+
+	bool keys[0x100] = { false };
+
+	bool can_track        (false);
+	bool was_window_valid (false);
+	bool was_tracking     (false);
+	HWND wnd              (NULL);
 	while (!quit)
 	{
-		HWND hwnd(::FindWindow(NULL, _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl")));
-		//HWND hwnd(::FindWindow(NULL, _T("Untitled - Notepad")));
-		bool is_tracking = initquit::is_tracking();
-		if
-			(  NULL != hwnd
-			&& hwnd == GetForegroundWindow()
-			&& !was_tracking
-			&& is_tracking
-			)
+		int delay(cfg::get_idle_polling_delay());
+		// verify current window validity
+		HWND foreground_wnd(::GetForegroundWindow());
+		bool is_window_valid(is_valid_window(wnd, foreground_wnd));
+		// close the events file
+		if (was_window_valid && !is_window_valid)
 		{
-			monitor_key_state(hwnd);
-			console::info("foo_stalker: passive mode");
-			was_tracking = true;
+			writer.close();
 		}
-		else
+		// search for the window
+		if (!is_window_valid)
 		{
-			was_tracking = is_tracking;
-			::Sleep(1024);
+			wnd = ::FindWindow(NULL, window_name);
+			is_window_valid = is_valid_window(wnd, foreground_wnd);
 		}
+		// open the events file
+		if (!was_window_valid && is_window_valid)
+		{
+			writer.open(wnd);
+			events.clear();
+			event_buffer::get_instance().add_event(cfg::get_init_message(), "init");
+		}
+		// track keyboard input
+		if (is_window_valid)
+		{
+			events.set_polling_delay(cfg::get_slow_game_polling_delay());
+			delay = cfg::get_window_polling_delay();
+			if (is_tracking())
+			{
+				if (can_track)
+				{
+					if (!was_tracking)
+						events.add_event(cfg::get_control_on_message(), "control_on");
+					was_tracking = true;
+
+					events.set_polling_delay(cfg::get_fast_game_polling_delay());
+					delay = cfg::get_tracking_polling_delay();
+
+					monitor_key_state(keys);
+				}
+			}
+			else
+			{
+				if (was_tracking)
+					events.add_event(cfg::get_control_off_message(), "control_off");
+				was_tracking = false;
+
+				can_track = true;
+			}
+		}
+		was_window_valid = is_window_valid;
+		Sleep(delay);
 	}
 }
 
 void
 foo_stalker::initquit::monitor_key_state
-	( HWND hwnd
+	( bool * keys // key state saved between calls
 	)
 {
-	console::info("foo_stalker: active mode");
-	event_buffer::get_instance().add_event("Foobar2000: control is ON.", "control_on");
-
-	ltx_writer & writer = ltx_writer::get_instance();
-
-	writer.open(hwnd);
-
 	static_api_ptr_t<main_thread_callback_manager> callback_manager;
-
-	bool is_active = false;
-
-	bool keys[0x100] = { false };
-
-	while
-		(  !quit
-		&& hwnd == GetForegroundWindow()
-		&& is_tracking()
-		)
+	for (int i = 1; i != 0x100; ++i) 
 	{
-		for (int i = 1; i != 0x100; ++i) 
+		if (i != VK_SCROLL)
 		{
-			if (i != VK_SCROLL)
-			{
-				const bool key_pressed = (0 != (0x8000 & GetAsyncKeyState(i)));
-				if (key_pressed && !keys[i])
-					callback_manager->add_callback(new service_impl_t<key_callback>(i));
-				keys[i] = key_pressed;
-			}
+			const bool key_pressed = (0 != (0x8000 & GetAsyncKeyState(i)));
+			if (key_pressed && !keys[i])
+				callback_manager->add_callback(new service_impl_t<key_callback>(i));
+			keys[i] = key_pressed;
 		}
-		::Sleep(128);
 	}
-
-	event_buffer::get_instance().add_event("Foobar2000: control is OFF.", "control_off");
-
-	writer.close();
 }
 
 void
@@ -144,6 +159,15 @@ bool
 foo_stalker::initquit::is_tracking()
 {
 	return 0x1 & ::GetKeyState(VK_SCROLL);
+}
+
+bool
+foo_stalker::initquit::is_valid_window
+	( HWND window
+	, HWND foreground_window
+	)
+{
+	return window != NULL && window == foreground_window;
 }
 
 //----------------------------

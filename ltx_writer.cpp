@@ -77,6 +77,7 @@ void ltx_writer::write(pfc::string8 text)
 	insync2(cs);
 	if (INVALID_HANDLE_VALUE == ltx_file)
 	{
+		console::info("missed message");
 		return;
 	}
 	else

@@ -6,7 +6,7 @@
 // 
 // • Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
 // • Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
-// • The name of foo_stalker may not be used to endorse or promote products derived from this software without specific prior written permission. 
+// • The name of foo_stalker and the names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission. 
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,6 +33,18 @@ namespace foo_stalker
 	class cfg
 	{
 	public:
+		static int       get_slow_game_polling_delay_default();
+		static cfg_int & get_slow_game_polling_delay();
+		static int       get_fast_game_polling_delay_default();
+		static cfg_int & get_fast_game_polling_delay();
+
+		static int get_idle_polling_delay();
+		static int get_window_polling_delay();
+		static int get_tracking_polling_delay();
+
+		static pfc::string8 get_init_message();
+		static pfc::string8 get_control_on_message();
+		static pfc::string8 get_control_off_message();
 
 		static bool         get_track_change_switch_default();
 		static cfg_bool &   get_track_change_switch();

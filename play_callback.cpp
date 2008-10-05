@@ -6,7 +6,7 @@
 // 
 // • Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
 // • Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
-// • The name of foo_stalker may not be used to endorse or promote products derived from this software without specific prior written permission. 
+// • The name of foo_stalker and the names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission. 
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -59,7 +59,16 @@ foo_stalker::play_callback::on_playback_new_track
 			, NULL    // p_filter
 			);
 
-		add_event(message, "track_change");
+		pfc::stringcvt::string_ansi_from_utf8 message_converter
+			( message.get_ptr()    // p_source
+			, message.get_length() // p_source_size
+			);
+		pfc::string8 ascii_message
+			( message_converter.get_ptr() // p_string
+			, message_converter.length()  // p_length
+			);
+
+		add_event(ascii_message, "track_change");
 	}
 }
 
