@@ -86,7 +86,7 @@ static cfg_bool cfg_seek_switch
 	( pfc::GUID_from_text("6eaff465-5fd3-429a-aab6-3b66687cf9da")
 	, cfg_seek_switch_default
 	);
-const char * const cfg_seek_message_default = "seek";
+const char * const cfg_seek_message_default = "seek to %time%";
 static cfg_string cfg_seek_message
 	( pfc::GUID_from_text("977ab552-b351-450e-8a7f-7f3d433d65d5")
 	, cfg_seek_message_default

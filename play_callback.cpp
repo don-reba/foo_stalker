@@ -90,7 +90,13 @@ foo_stalker::play_callback::on_playback_seek
 	)
 {
 	if (foo_stalker::cfg::get_seek_switch())
-		add_event(foo_stalker::cfg::get_seek_message(), "seek");
+	{
+		pfc::string message(cfg::get_seek_message());
+		add_event
+			( message.replace("%time%", pfc::format_time_ex(p_time, 1).get_ptr()).ptr()
+			, "seek"
+			);
+	}
 }
 
 //! Called on pause/unpause.
