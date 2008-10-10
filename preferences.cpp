@@ -84,6 +84,9 @@ preferences::reset
 
 	cfg::get_seek_switch()          = cfg::get_seek_switch_default();
 	cfg::get_seek_message()         = cfg::get_seek_message_default();
+
+	cfg::get_volume_switch()        = cfg::get_volume_switch_default();
+	cfg::get_volume_message()       = cfg::get_volume_message_default();
 };
 
 BOOL CALLBACK
@@ -105,11 +108,13 @@ preferences::ConfigProc
 			::uSetDlgItemText(wnd, IDC_PAUSE_MESSAGE,        cfg::get_pause_message());
 			::uSetDlgItemText(wnd, IDC_STOP_MESSAGE,         cfg::get_stop_message());
 			::uSetDlgItemText(wnd, IDC_SEEK_MESSAGE,         cfg::get_seek_message());
+			::uSetDlgItemText(wnd, IDC_VOLUME_MESSAGE,       cfg::get_volume_message());
 
-			::SendDlgItemMessage(wnd, IDC_TRACK_CHANGE_SWITCH, BM_SETCHECK,  cfg::get_track_change_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_PAUSE_SWITCH,        BM_SETCHECK,  cfg::get_pause_switch()        ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_STOP_SWITCH,         BM_SETCHECK,  cfg::get_stop_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_SEEK_SWITCH,         BM_SETCHECK,  cfg::get_seek_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_TRACK_CHANGE_SWITCH, BM_SETCHECK, cfg::get_track_change_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_PAUSE_SWITCH,        BM_SETCHECK, cfg::get_pause_switch()        ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_STOP_SWITCH,         BM_SETCHECK, cfg::get_stop_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_SEEK_SWITCH,         BM_SETCHECK, cfg::get_seek_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
+			::SendDlgItemMessage(wnd, IDC_VOLUME_SWITCH,       BM_SETCHECK, cfg::get_volume_switch()       ? BST_CHECKED : BST_UNCHECKED, 0);
         } break;
         case WM_COMMAND:
         {
@@ -193,6 +198,21 @@ preferences::ConfigProc
 					{
 						cfg::get_track_change_switch() =
 							Button_GetCheck(::GetDlgItem(wnd, IDC_TRACK_CHANGE_SWITCH)) == BST_CHECKED;
+					}
+				} break;
+				case IDC_VOLUME_MESSAGE:
+				{
+                    if (HIWORD(wp)==EN_UPDATE)
+                    {
+						::uGetDlgItemText(wnd, IDC_VOLUME_MESSAGE, cfg::get_volume_message());
+                    }
+				} break;
+				case IDC_VOLUME_SWITCH:
+				{
+					if (HIWORD(wp)==BN_CLICKED)
+					{
+						cfg::get_volume_switch() =
+							Button_GetCheck(::GetDlgItem(wnd, IDC_VOLUME_SWITCH)) == BST_CHECKED;
 					}
 				} break;
             }

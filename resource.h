@@ -4,7 +4,6 @@
 //
 #define IDD_S_CONFIGVIEW                101
 #define IDC_SLOW_GAME_POLLING_DELAY     1001
-#define IDC_EDIT2                       1002
 #define IDC_FAST_GAME_POLLING_DELAY     1002
 #define IDC_TRACK_CHANGE_MESSAGE        1010
 #define IDC_TRACK_CHANGE_SWITCH         1011
@@ -15,6 +14,9 @@
 #define IDC_CHECK4                      1018
 #define IDC_SEEK_SWITCH                 1018
 #define IDC_SEEK_MESSAGE                1019
+#define IDC_VOLUME_SWITCH               1020
+#define IDC_SEEK_MESSAGE2               1021
+#define IDC_VOLUME_MESSAGE              1021
 
 // Next default values for new objects
 // 

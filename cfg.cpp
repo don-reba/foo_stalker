@@ -92,6 +92,18 @@ static cfg_string cfg_seek_message
 	, cfg_seek_message_default
 	);
 
+// volume_change event
+const bool cfg_volume_switch_default = true;
+static cfg_bool cfg_volume_switch
+	( pfc::GUID_from_text("3d8cd75d-cb38-4068-8d94-57815765a3bb")
+	, cfg_volume_switch_default
+	);
+const char * const cfg_volume_message_default = "volume %volume% dB";
+cfg_string cfg_volume_message
+	( pfc::GUID_from_text("b9e863a9-9477-4bc4-9169-fcbd8bef4918")
+	, cfg_volume_message_default
+	);
+
 //-------------------
 // cfg implementation
 //-------------------
@@ -125,3 +137,7 @@ bool         cfg::get_seek_switch_default()          { return cfg_seek_switch_de
 cfg_bool &   cfg::get_seek_switch()                  { return cfg_seek_switch;                  }
 const char * cfg::get_seek_message_default()         { return cfg_seek_message_default;         }
 cfg_string & cfg::get_seek_message()                 { return cfg_seek_message;                 }
+bool         cfg::get_volume_switch_default()        { return cfg_volume_switch_default;        }
+cfg_bool &   cfg::get_volume_switch()                { return cfg_volume_switch;                }
+const char * cfg::get_volume_message_default()       { return cfg_volume_message_default;       }
+cfg_string & cfg::get_volume_message()               { return cfg_volume_message;               }

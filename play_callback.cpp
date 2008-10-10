@@ -78,6 +78,7 @@ foo_stalker::play_callback::on_playback_stop
 	( play_control::t_stop_reason p_reason
 	)
 {
+	if (p_reason == play_control::t_stop_reason::stop_reason_user)
 	if (foo_stalker::cfg::get_stop_switch())
 		add_event(foo_stalker::cfg::get_stop_message(), "stop");
 }
@@ -141,6 +142,14 @@ foo_stalker::play_callback::on_volume_change
 	( float p_new_val
 	)
 {
+	if (foo_stalker::cfg::get_volume_switch())
+	{
+		pfc::string message(cfg::get_volume_message());
+		add_event
+			( message.replace("%volume%", pfc::format_float(p_new_val, 0, 2).get_ptr()).ptr()
+			, (-100.0f == p_new_val) ? "volume_mute" : "volume_change"
+			);
+	}
 }
 
 //! Return the flags corresponding to the base class functions implemented.
@@ -151,7 +160,9 @@ foo_stalker::play_callback::get_flags()
 		flag_on_playback_new_track
 		| flag_on_playback_stop
 		| flag_on_playback_seek
-		| flag_on_playback_pause;
+		| flag_on_playback_pause
+		| flag_on_volume_change
+		;
 }
 
 void

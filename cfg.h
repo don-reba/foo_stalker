@@ -62,5 +62,9 @@ namespace foo_stalker
 		static cfg_bool &   get_seek_switch();
 		static const char * get_seek_message_default();
 		static cfg_string & get_seek_message();
+		static bool         get_volume_switch_default();
+		static cfg_bool &   get_volume_switch();
+		static const char * get_volume_message_default();
+		static cfg_string & get_volume_message();
 	};
 }
