@@ -70,23 +70,25 @@ void
 preferences::reset
 	()
 {
+	cfg::get_suspend_input_switch() = cfg::get_suspend_input_switch_default();
+
 	cfg::get_slow_game_polling_delay() = cfg::get_slow_game_polling_delay_default();
 	cfg::get_fast_game_polling_delay() = cfg::get_fast_game_polling_delay_default();
 
 	cfg::get_track_change_switch()  = cfg::get_track_change_switch_default();
 	cfg::get_track_change_message() = cfg::get_track_change_message_default();
 
-	cfg::get_pause_switch()         = cfg::get_pause_switch_default();
-	cfg::get_pause_message()        = cfg::get_pause_message_default();
+	cfg::get_pause_switch()  = cfg::get_pause_switch_default();
+	cfg::get_pause_message() = cfg::get_pause_message_default();
 
-	cfg::get_stop_switch()          = cfg::get_stop_switch_default();
-	cfg::get_stop_message()         = cfg::get_stop_message_default();
+	cfg::get_stop_switch()  = cfg::get_stop_switch_default();
+	cfg::get_stop_message() = cfg::get_stop_message_default();
 
-	cfg::get_seek_switch()          = cfg::get_seek_switch_default();
-	cfg::get_seek_message()         = cfg::get_seek_message_default();
+	cfg::get_seek_switch()  = cfg::get_seek_switch_default();
+	cfg::get_seek_message() = cfg::get_seek_message_default();
 
-	cfg::get_volume_switch()        = cfg::get_volume_switch_default();
-	cfg::get_volume_message()       = cfg::get_volume_message_default();
+	cfg::get_volume_switch()  = cfg::get_volume_switch_default();
+	cfg::get_volume_message() = cfg::get_volume_message_default();
 };
 
 BOOL CALLBACK
@@ -101,6 +103,8 @@ preferences::ConfigProc
     {
         case WM_INITDIALOG:
         {
+			::SendDlgItemMessage(wnd, IDC_SUSPEND_INPUT_SWITCH, BM_SETCHECK, cfg::get_suspend_input_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
+
 			::uSetDlgItemInt(wnd, IDC_SLOW_GAME_POLLING_DELAY, cfg::get_slow_game_polling_delay(), FALSE);
 			::uSetDlgItemInt(wnd, IDC_FAST_GAME_POLLING_DELAY, cfg::get_fast_game_polling_delay(), FALSE);
 
@@ -183,6 +187,14 @@ preferences::ConfigProc
 					{
 						cfg::get_stop_switch() =
 							Button_GetCheck(::GetDlgItem(wnd, IDC_STOP_SWITCH)) == BST_CHECKED;
+					}
+				} break;
+				case IDC_SUSPEND_INPUT_SWITCH:
+				{
+					if (HIWORD(wp)==BN_CLICKED)
+					{
+						cfg::get_suspend_input_switch() =
+							Button_GetCheck(::GetDlgItem(wnd, IDC_SUSPEND_INPUT_SWITCH)) == BST_CHECKED;
 					}
 				} break;
                 case IDC_TRACK_CHANGE_MESSAGE:

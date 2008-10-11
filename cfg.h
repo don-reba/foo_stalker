@@ -33,6 +33,9 @@ namespace foo_stalker
 	class cfg
 	{
 	public:
+		static bool       get_suspend_input_switch_default();
+		static cfg_bool & get_suspend_input_switch();
+
 		static int       get_slow_game_polling_delay_default();
 		static cfg_int & get_slow_game_polling_delay();
 		static int       get_fast_game_polling_delay_default();

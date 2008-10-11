@@ -5,6 +5,8 @@
 #define IDD_S_CONFIGVIEW                101
 #define IDC_SLOW_GAME_POLLING_DELAY     1001
 #define IDC_FAST_GAME_POLLING_DELAY     1002
+#define IDC_CHECK1                      1003
+#define IDC_SUSPEND_INPUT_SWITCH        1003
 #define IDC_TRACK_CHANGE_MESSAGE        1010
 #define IDC_TRACK_CHANGE_SWITCH         1011
 #define IDC_PAUSE_MESSAGE               1012
@@ -15,7 +17,6 @@
 #define IDC_SEEK_SWITCH                 1018
 #define IDC_SEEK_MESSAGE                1019
 #define IDC_VOLUME_SWITCH               1020
-#define IDC_SEEK_MESSAGE2               1021
 #define IDC_VOLUME_MESSAGE              1021
 
 // Next default values for new objects
@@ -24,7 +25,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        104
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -30,6 +30,12 @@ using namespace foo_stalker;
 // static configuration variables
 //-------------------------------
 
+const bool cfg_suspend_input_switch_default = true;
+static cfg_bool cfg_suspend_input_switch
+	( pfc::GUID_from_text("eae2ddf6-6f8c-4497-9dcb-dfbfc5e89645")
+	, cfg_suspend_input_switch_default
+	);
+
 // fast game polling delay
 const int cfg_fast_game_polling_delay_default = 1000;
 static cfg_int cfg_fast_game_polling_delay
@@ -107,6 +113,9 @@ cfg_string cfg_volume_message
 //-------------------
 // cfg implementation
 //-------------------
+
+bool       cfg::get_suspend_input_switch_default() { return cfg_suspend_input_switch_default; }
+cfg_bool & cfg::get_suspend_input_switch()         { return cfg_suspend_input_switch;         }
 
 int       cfg::get_slow_game_polling_delay_default() { return cfg_slow_game_polling_delay_default; }
 cfg_int & cfg::get_slow_game_polling_delay()         { return cfg_slow_game_polling_delay;         }

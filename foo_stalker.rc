@@ -85,6 +85,7 @@ BEGIN
     LTEXT           "Delay in milliseconds with which the game should check for events.\nAffects performance and responsiveness.",IDC_STATIC,12,137,300,22
     CONTROL         "Volume",IDC_VOLUME_SWITCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,90,60,12
     EDITTEXT        IDC_VOLUME_MESSAGE,78,90,234,12,ES_AUTOHSCROLL
+    CONTROL         "Suspend game input",IDC_SUSPEND_INPUT_SWITCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,216,300,10
 END
 
 
