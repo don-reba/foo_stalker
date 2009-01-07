@@ -56,7 +56,14 @@ void ltx_writer::close()
 	insync2(cs);
 	if (INVALID_HANDLE_VALUE != ltx_file)
 	{
-		CloseHandle(ltx_file);
+		::SetFilePointer
+			( ltx_file   // hFile
+			, 0          // lDistanceToMove
+			, NULL       // lpDistanceToMoveHigh
+			, FILE_BEGIN // dwMoveMethod
+			);
+		::SetEndOfFile(ltx_file);
+		::CloseHandle(ltx_file);
 		ltx_file = INVALID_HANDLE_VALUE;
 	}
 }
@@ -70,6 +77,7 @@ void ltx_writer::reset()
 		, NULL       // lpDistanceToMoveHigh
 		, FILE_BEGIN // dwMoveMethod
 		);
+	::SetEndOfFile(ltx_file);
 }
 
 void ltx_writer::write(pfc::string8 text)
@@ -77,7 +85,6 @@ void ltx_writer::write(pfc::string8 text)
 	insync2(cs);
 	if (INVALID_HANDLE_VALUE == ltx_file)
 	{
-		console::info("missed message");
 		return;
 	}
 	else

@@ -124,6 +124,7 @@ foo_stalker::initquit::find_game_window
 		was_window_valid = is_window_valid;
 		Sleep(delay);
 	}
+	writer.close();
 }
 
 void
