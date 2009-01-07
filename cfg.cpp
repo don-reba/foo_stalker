@@ -122,8 +122,8 @@ cfg_int & cfg::get_slow_game_polling_delay()         { return cfg_slow_game_poll
 int       cfg::get_fast_game_polling_delay_default() { return cfg_fast_game_polling_delay_default; }
 cfg_int & cfg::get_fast_game_polling_delay()         { return cfg_fast_game_polling_delay;         }
 
-int cfg::get_idle_polling_delay()      { return 2000; }
-int cfg::get_window_polling_delay()    { return 1000; }
+int cfg::get_idle_polling_delay()      { return 4000; }
+int cfg::get_window_polling_delay()    { return 500; }
 int cfg::get_tracking_polling_delay()  { return 125;  }
 
 pfc::string8 cfg::get_init_message()        { return "connection is enabled"; }

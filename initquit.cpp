@@ -29,6 +29,8 @@
 #include "play_callback.h"
 #include "resource.h"
 
+#include <vector>
+
 
 //-----------------------------
 // static member initialization
@@ -46,7 +48,9 @@ foo_stalker::initquit::find_game_window
 	( void *
 	)
 {
-	const TCHAR * const window_name(_T("S.T.A.L.K.E.R.: Shadow Of Chernobyl"));
+	std::vector<const TCHAR*> window_names(2);
+	window_names[0] = _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl");
+	window_names[1] = _T("S.T.A.L.K.E.R.: Clear Sky");
 
 	ltx_writer   & writer = ltx_writer::get_instance();
 	event_buffer & events = event_buffer::get_instance();
@@ -71,8 +75,16 @@ foo_stalker::initquit::find_game_window
 		// search for the window
 		if (!is_window_valid)
 		{
-			wnd = ::FindWindow(NULL, window_name);
-			is_window_valid = is_valid_window(wnd, foreground_wnd);
+			for (int i = 0; i != window_names.size(); ++i)
+			{
+				wnd = ::FindWindow(NULL, window_names.at(i));
+				is_window_valid = is_valid_window(wnd, foreground_wnd);
+				if (is_window_valid)
+				{
+					console::printf("found '%ls'", window_names.at(i));
+					break;
+				}
+			}
 		}
 		// open the events file
 		if (!was_window_valid && is_window_valid)
