@@ -51,6 +51,14 @@ namespace foo_stalker
 	{
 	private:
 
+		struct WindowInfo
+		{
+			const TCHAR * name;
+			const TCHAR * config_folder;
+		};
+
+	private:
+
 		static bool quit;
 		static bool was_tracking;
 

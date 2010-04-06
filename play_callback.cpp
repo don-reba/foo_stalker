@@ -78,7 +78,7 @@ foo_stalker::play_callback::on_playback_stop
 	( play_control::t_stop_reason p_reason
 	)
 {
-	if (p_reason == play_control::t_stop_reason::stop_reason_user)
+	if (p_reason == play_control::stop_reason_user)
 	if (foo_stalker::cfg::get_stop_switch())
 		add_event(foo_stalker::cfg::get_stop_message(), "stop");
 }

@@ -29,14 +29,9 @@
 
 using namespace foo_stalker;
 
-
-HWND
-preferences::create
-	( HWND parent
-	)
-{
-    return uCreateDialog(IDD_S_CONFIGVIEW, parent, ConfigProc);
-};
+//---------------------------
+// preferences implementation
+//---------------------------
 
 const char *
 preferences::get_name
@@ -59,15 +54,87 @@ preferences::get_parent_guid
     return preferences_page::guid_tools;
 }
 
-bool
-preferences::reset_query
+preferences_page_instance::ptr
+preferences::instantiate
+	( HWND parent
+	, preferences_page_callback::ptr callback
+	)
+{
+	return new service_impl_t<preferences_instance>(parent, callback);
+}
+
+//------------------------------------
+// preferences_instance implementation
+//------------------------------------
+
+preferences_instance::preferences_instance
+	( HWND parent
+	, preferences_page_callback::ptr callback
+	)
+	: callback    (callback)
+	, has_changed (false)
+{
+	wnd = uCreateDialog
+		( IDD_S_CONFIGVIEW
+		, parent
+		, config_proc
+		, reinterpret_cast<LPARAM>(this)
+		);
+	init_wnd();
+}
+
+t_uint32
+preferences_instance::get_state
 	()
 {
-    return true;
+	t_uint32 state = preferences_state::resettable;
+	if (has_changed)
+		state |= preferences_state::changed;
+	return state;
+}
+
+HWND
+preferences_instance::get_wnd
+	()
+{
+	return wnd;
 }
 
 void
-preferences::reset
+preferences_instance::apply
+	()
+{
+	BOOL translated;
+	int  result;
+
+	translated = FALSE;
+	result = ::uGetDlgItemInt(wnd, IDC_FAST_GAME_POLLING_DELAY, &translated, false);
+	if (translated)
+		cfg::get_fast_game_polling_delay() = result;
+
+	translated = FALSE;
+	result = ::uGetDlgItemInt(wnd, IDC_SLOW_GAME_POLLING_DELAY, &translated, false);
+	if (translated)
+		cfg::get_slow_game_polling_delay() = result;
+
+	::uGetDlgItemText(wnd, IDC_PAUSE_MESSAGE,        cfg::get_pause_message());
+	::uGetDlgItemText(wnd, IDC_SEEK_MESSAGE,         cfg::get_seek_message());
+	::uGetDlgItemText(wnd, IDC_STOP_MESSAGE,         cfg::get_stop_message());
+	::uGetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
+	::uGetDlgItemText(wnd, IDC_VOLUME_MESSAGE,       cfg::get_volume_message());
+
+	cfg::get_pause_switch()         = Button_GetCheck(::GetDlgItem(wnd, IDC_PAUSE_SWITCH))         == BST_CHECKED;
+	cfg::get_seek_switch()          = Button_GetCheck(::GetDlgItem(wnd, IDC_SEEK_SWITCH))          == BST_CHECKED;
+	cfg::get_stop_switch()          = Button_GetCheck(::GetDlgItem(wnd, IDC_STOP_SWITCH))          == BST_CHECKED;
+	cfg::get_suspend_input_switch() = Button_GetCheck(::GetDlgItem(wnd, IDC_SUSPEND_INPUT_SWITCH)) == BST_CHECKED;
+	cfg::get_track_change_switch()  = Button_GetCheck(::GetDlgItem(wnd, IDC_TRACK_CHANGE_SWITCH))  == BST_CHECKED;
+	cfg::get_volume_switch()        = Button_GetCheck(::GetDlgItem(wnd, IDC_VOLUME_SWITCH))        == BST_CHECKED;
+
+	has_changed = false;
+}
+
+void
+preferences_instance::reset
 	()
 {
 	cfg::get_suspend_input_switch() = cfg::get_suspend_input_switch_default();
@@ -89,146 +156,71 @@ preferences::reset
 
 	cfg::get_volume_switch()  = cfg::get_volume_switch_default();
 	cfg::get_volume_message() = cfg::get_volume_message_default();
-};
+
+	has_changed = false;
+
+	init_wnd();
+}
 
 BOOL CALLBACK
-preferences::ConfigProc
+preferences_instance::config_proc
 	( HWND   wnd
 	, UINT   msg
 	, WPARAM wp
 	, LPARAM lp
 	)
 {
-    switch(msg)
-    {
-        case WM_INITDIALOG:
-        {
-			::SendDlgItemMessage(wnd, IDC_SUSPEND_INPUT_SWITCH, BM_SETCHECK, cfg::get_suspend_input_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
+	preferences_instance * obj
+		= reinterpret_cast<preferences_instance*>(::GetWindowLong(wnd, GWL_USERDATA));
+	switch(msg)
+	{
+	case WM_INITDIALOG:
+		::SetWindowLong(wnd, GWL_USERDATA, lp);
+		obj = reinterpret_cast<preferences_instance*>(lp);
+		break;
+	case WM_COMMAND:
+		switch(LOWORD(wp))
+		{
+		case IDC_FAST_GAME_POLLING_DELAY: if (HIWORD(wp) == EN_UPDATE)  obj->has_changed = true; break;
+		case IDC_PAUSE_MESSAGE:           if (HIWORD(wp) == EN_UPDATE)  obj->has_changed = true; break;
+		case IDC_PAUSE_SWITCH:            if (HIWORD(wp) == BN_CLICKED) obj->has_changed = true; break;
+		case IDC_SEEK_MESSAGE:            if (HIWORD(wp) == EN_UPDATE)  obj->has_changed = true; break;
+		case IDC_SEEK_SWITCH:             if (HIWORD(wp) == BN_CLICKED) obj->has_changed = true; break;
+		case IDC_SLOW_GAME_POLLING_DELAY: if (HIWORD(wp) == EN_UPDATE)  obj->has_changed = true; break;
+		case IDC_STOP_MESSAGE:            if (HIWORD(wp) == EN_UPDATE)  obj->has_changed = true; break;
+		case IDC_STOP_SWITCH:             if (HIWORD(wp) == BN_CLICKED) obj->has_changed = true; break;
+		case IDC_SUSPEND_INPUT_SWITCH:    if (HIWORD(wp) == BN_CLICKED) obj->has_changed = true; break;
+		case IDC_TRACK_CHANGE_MESSAGE:    if (HIWORD(wp) == EN_UPDATE)  obj->has_changed = true; break;
+		case IDC_TRACK_CHANGE_SWITCH:     if (HIWORD(wp) == BN_CLICKED) obj->has_changed = true; break;
+		case IDC_VOLUME_MESSAGE:          if (HIWORD(wp) == EN_UPDATE)  obj->has_changed = true; break;
+		case IDC_VOLUME_SWITCH:           if (HIWORD(wp) == BN_CLICKED) obj->has_changed = true; break;
+		}
+		break;
+	}
+	if (obj && obj->has_changed)
+		obj->callback->on_state_changed();
+	return 0;
+}
 
-			::uSetDlgItemInt(wnd, IDC_SLOW_GAME_POLLING_DELAY, cfg::get_slow_game_polling_delay(), FALSE);
-			::uSetDlgItemInt(wnd, IDC_FAST_GAME_POLLING_DELAY, cfg::get_fast_game_polling_delay(), FALSE);
+void
+preferences_instance::init_wnd()
+{
+	::SendDlgItemMessage(wnd, IDC_SUSPEND_INPUT_SWITCH, BM_SETCHECK, cfg::get_suspend_input_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
 
-			::uSetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
-			::uSetDlgItemText(wnd, IDC_PAUSE_MESSAGE,        cfg::get_pause_message());
-			::uSetDlgItemText(wnd, IDC_STOP_MESSAGE,         cfg::get_stop_message());
-			::uSetDlgItemText(wnd, IDC_SEEK_MESSAGE,         cfg::get_seek_message());
-			::uSetDlgItemText(wnd, IDC_VOLUME_MESSAGE,       cfg::get_volume_message());
+	::uSetDlgItemInt(wnd, IDC_SLOW_GAME_POLLING_DELAY, cfg::get_slow_game_polling_delay(), FALSE);
+	::uSetDlgItemInt(wnd, IDC_FAST_GAME_POLLING_DELAY, cfg::get_fast_game_polling_delay(), FALSE);
 
-			::SendDlgItemMessage(wnd, IDC_TRACK_CHANGE_SWITCH, BM_SETCHECK, cfg::get_track_change_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_PAUSE_SWITCH,        BM_SETCHECK, cfg::get_pause_switch()        ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_STOP_SWITCH,         BM_SETCHECK, cfg::get_stop_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_SEEK_SWITCH,         BM_SETCHECK, cfg::get_seek_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
-			::SendDlgItemMessage(wnd, IDC_VOLUME_SWITCH,       BM_SETCHECK, cfg::get_volume_switch()       ? BST_CHECKED : BST_UNCHECKED, 0);
-        } break;
-        case WM_COMMAND:
-        {
-            switch(LOWORD(wp))
-            {
-				case IDC_FAST_GAME_POLLING_DELAY:
-				{
-					if (HIWORD(wp)==EN_UPDATE)
-					{
-						BOOL translated(FALSE);
-						int result(::uGetDlgItemInt(wnd, IDC_FAST_GAME_POLLING_DELAY, &translated, false));
-						if (translated)
-							cfg::get_fast_game_polling_delay() = result;
-					}
-				} break;
-                case IDC_PAUSE_MESSAGE:
-				{
-                    if (HIWORD(wp)==EN_UPDATE)
-                    {
-                        ::uGetDlgItemText(wnd, IDC_PAUSE_MESSAGE, cfg::get_pause_message());
-                    }
-				} break;
-				case IDC_PAUSE_SWITCH:
-				{
-					if (HIWORD(wp)==BN_CLICKED)
-					{
-						cfg::get_pause_switch() =
-							Button_GetCheck(::GetDlgItem(wnd, IDC_PAUSE_SWITCH)) == BST_CHECKED;
-					}
-				} break;
-                case IDC_SEEK_MESSAGE:
-				{
-                    if (HIWORD(wp)==EN_UPDATE)
-                    {
-                        ::uGetDlgItemText(wnd, IDC_SEEK_MESSAGE, cfg::get_seek_message());
-                    }
-				} break;
-				case IDC_SEEK_SWITCH:
-				{
-					if (HIWORD(wp)==BN_CLICKED)
-					{
-						cfg::get_seek_switch() =
-							Button_GetCheck(::GetDlgItem(wnd, IDC_SEEK_SWITCH)) == BST_CHECKED;
-					}
-				} break;
-				case IDC_SLOW_GAME_POLLING_DELAY:
-				{
-					if (HIWORD(wp)==EN_UPDATE)
-					{
-						BOOL translated(FALSE);
-						int result(::uGetDlgItemInt(wnd, IDC_SLOW_GAME_POLLING_DELAY, &translated, false));
-						if (translated)
-							cfg::get_slow_game_polling_delay() = result;
-					}
-				} break;
-                case IDC_STOP_MESSAGE:
-				{
-                    if (HIWORD(wp)==EN_UPDATE)
-                    {
-						::uGetDlgItemText(wnd, IDC_STOP_MESSAGE, cfg::get_stop_message());
-                    }
-				} break;
-				case IDC_STOP_SWITCH:
-				{
-					if (HIWORD(wp)==BN_CLICKED)
-					{
-						cfg::get_stop_switch() =
-							Button_GetCheck(::GetDlgItem(wnd, IDC_STOP_SWITCH)) == BST_CHECKED;
-					}
-				} break;
-				case IDC_SUSPEND_INPUT_SWITCH:
-				{
-					if (HIWORD(wp)==BN_CLICKED)
-					{
-						cfg::get_suspend_input_switch() =
-							Button_GetCheck(::GetDlgItem(wnd, IDC_SUSPEND_INPUT_SWITCH)) == BST_CHECKED;
-					}
-				} break;
-                case IDC_TRACK_CHANGE_MESSAGE:
-				{
-                    if (HIWORD(wp)==EN_UPDATE)
-                    {
-						::uGetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
-                    }
-				} break;
-				case IDC_TRACK_CHANGE_SWITCH:
-				{
-					if (HIWORD(wp)==BN_CLICKED)
-					{
-						cfg::get_track_change_switch() =
-							Button_GetCheck(::GetDlgItem(wnd, IDC_TRACK_CHANGE_SWITCH)) == BST_CHECKED;
-					}
-				} break;
-				case IDC_VOLUME_MESSAGE:
-				{
-                    if (HIWORD(wp)==EN_UPDATE)
-                    {
-						::uGetDlgItemText(wnd, IDC_VOLUME_MESSAGE, cfg::get_volume_message());
-                    }
-				} break;
-				case IDC_VOLUME_SWITCH:
-				{
-					if (HIWORD(wp)==BN_CLICKED)
-					{
-						cfg::get_volume_switch() =
-							Button_GetCheck(::GetDlgItem(wnd, IDC_VOLUME_SWITCH)) == BST_CHECKED;
-					}
-				} break;
-            }
-        } break;
-    }
-    return 0;
+	::uSetDlgItemText(wnd, IDC_TRACK_CHANGE_MESSAGE, cfg::get_track_change_message());
+	::uSetDlgItemText(wnd, IDC_PAUSE_MESSAGE,        cfg::get_pause_message());
+	::uSetDlgItemText(wnd, IDC_STOP_MESSAGE,         cfg::get_stop_message());
+	::uSetDlgItemText(wnd, IDC_SEEK_MESSAGE,         cfg::get_seek_message());
+	::uSetDlgItemText(wnd, IDC_VOLUME_MESSAGE,       cfg::get_volume_message());
+
+	::SendDlgItemMessage(wnd, IDC_TRACK_CHANGE_SWITCH, BM_SETCHECK, cfg::get_track_change_switch() ? BST_CHECKED : BST_UNCHECKED, 0);
+	::SendDlgItemMessage(wnd, IDC_PAUSE_SWITCH,        BM_SETCHECK, cfg::get_pause_switch()        ? BST_CHECKED : BST_UNCHECKED, 0);
+	::SendDlgItemMessage(wnd, IDC_STOP_SWITCH,         BM_SETCHECK, cfg::get_stop_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
+	::SendDlgItemMessage(wnd, IDC_SEEK_SWITCH,         BM_SETCHECK, cfg::get_seek_switch()         ? BST_CHECKED : BST_UNCHECKED, 0);
+	::SendDlgItemMessage(wnd, IDC_VOLUME_SWITCH,       BM_SETCHECK, cfg::get_volume_switch()       ? BST_CHECKED : BST_UNCHECKED, 0);
+
+	has_changed = false;
 }

@@ -44,11 +44,11 @@ ltx_writer::~ltx_writer()
 	close();
 }
 
-void ltx_writer::open(HWND hwnd)
+void ltx_writer::open(HWND hwnd, const TCHAR * config_folder)
 {
 	insync2(cs);
 	close();
-	ltx_file = OpenLtxFile(hwnd);
+	ltx_file = OpenLtxFile(hwnd, config_folder);
 }
 
 void ltx_writer::close()
@@ -105,7 +105,7 @@ void ltx_writer::write(pfc::string8 text)
 	}
 }
 
-HANDLE ltx_writer::OpenLtxFile(HWND hwnd)
+HANDLE ltx_writer::OpenLtxFile(HWND hwnd, const TCHAR * config_folder)
 {
 	DWORD process_id(0);
 	::GetWindowThreadProcessId(hwnd, &process_id);
@@ -142,7 +142,7 @@ HANDLE ltx_writer::OpenLtxFile(HWND hwnd)
 		return INVALID_HANDLE_VALUE;
 	}
 
-	::PathCombine(path, path, L"config");
+	::PathCombine(path, path, config_folder);
 	::CreateDirectoryW(path, NULL);
 
 	::PathCombineW(path, path, L"fb2k.ltx");

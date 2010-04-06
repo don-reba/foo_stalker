@@ -33,12 +33,9 @@ const char * const cfg_track_change_message_default = "Foobar2000: %tracknumber%
 namespace foo_stalker
 {
 	//! Preferences page for foo_stalker.
-	class preferences : public preferences_page
+	class preferences : public preferences_page_v3
 	{
 	public:
-
-		//! Creates preferences page dialog window. It is safe to assume that two dialog instances will never coexist. Caller is responsible for embedding it into preferences dialog itself.
-		HWND create(HWND parent);
 
 		//! Retrieves name of the prefernces page to be displayed in preferences tree (static string).
 		const char * get_name();
@@ -49,14 +46,39 @@ namespace foo_stalker
 		//! Retrieves GUID of parent page/branch of this page. See preferences_page::guid_* constants for list of standard parent GUIDs. Can also be a GUID of another page or a branch (see: preferences_branch).
 		GUID get_parent_guid();
 
-		//! Queries whether this page supports "reset page" feature.
-		bool reset_query();
+		preferences_page_instance::ptr instantiate(HWND parent, preferences_page_callback::ptr callback);
+	};
 
-		//! Activates "reset page" feature. It is safe to assume that the preferences page dialog does not exist at the point this is called (caller destroys it before calling reset and creates it again afterwards).
+	class preferences_instance : public preferences_page_instance
+	{
+	public:
+
+		preferences_instance(HWND parent, preferences_page_callback::ptr callback);
+
+		//! @returns a combination of preferences_state constants.
+		t_uint32 get_state();
+
+		//! @returns the window handle.
+		HWND get_wnd();
+
+		//! Applies preferences changes.
+		void apply();
+
+		//! Resets this page's content to the default values. Does not apply any changes - lets user preview the changes before hitting "apply".
 		void reset();
 
 	private:
 
-		static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+		static BOOL CALLBACK config_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+		void init_wnd();
+
+	private:
+
+		HWND wnd;
+
+		bool has_changed;
+		
+		const preferences_page_callback::ptr callback;
 	};
 }

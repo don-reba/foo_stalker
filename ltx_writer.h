@@ -44,7 +44,7 @@ namespace foo_stalker
 
 		~ltx_writer();
 
-		void open(HWND hwnd);
+		void open(HWND hwnd, const TCHAR * config_folder);
 
 		void close();
 
@@ -56,6 +56,6 @@ namespace foo_stalker
 
 	private:
 
-		static HANDLE OpenLtxFile(HWND hwnd);
+		static HANDLE OpenLtxFile(HWND hwnd, const TCHAR * config_folder);
 	};
 }

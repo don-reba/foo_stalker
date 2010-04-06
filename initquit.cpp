@@ -31,7 +31,6 @@
 
 #include <vector>
 
-
 //-----------------------------
 // static member initialization
 //-----------------------------
@@ -48,9 +47,13 @@ foo_stalker::initquit::find_game_window
 	( void *
 	)
 {
-	std::vector<const TCHAR*> window_names(2);
-	window_names[0] = _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl");
-	window_names[1] = _T("S.T.A.L.K.E.R.: Clear Sky");
+	std::vector<WindowInfo> window_infos(3);
+	window_infos[0].name          = _T("S.T.A.L.K.E.R.: Shadow Of Chernobyl");
+	window_infos[0].config_folder = _T("config");
+	window_infos[1].name          = _T("S.T.A.L.K.E.R.: Clear Sky");
+	window_infos[1].config_folder = _T("configs");
+	window_infos[2].name          = _T("S.T.A.L.K.E.R.: Call of Pripyat");
+	window_infos[2].config_folder = _T("configs");
 
 	ltx_writer   & writer = ltx_writer::get_instance();
 	event_buffer & events = event_buffer::get_instance();
@@ -73,15 +76,17 @@ foo_stalker::initquit::find_game_window
 			writer.close();
 		}
 		// search for the window
+		WindowInfo window_info;
 		if (!is_window_valid)
 		{
-			for (int i = 0; i != window_names.size(); ++i)
+			for (int i = 0; i != window_infos.size(); ++i)
 			{
-				wnd = ::FindWindow(NULL, window_names.at(i));
+				window_info = window_infos.at(i);
+				wnd = ::FindWindow(NULL, window_info.name);
 				is_window_valid = is_valid_window(wnd, foreground_wnd);
 				if (is_window_valid)
 				{
-					console::printf("found '%ls'", window_names.at(i));
+					console::printf("found '%ls'", window_info.name);
 					break;
 				}
 			}
@@ -89,7 +94,7 @@ foo_stalker::initquit::find_game_window
 		// open the events file
 		if (!was_window_valid && is_window_valid)
 		{
-			writer.open(wnd);
+			writer.open(wnd, window_info.config_folder);
 			events.clear();
 			event_buffer::get_instance().add_event(cfg::get_init_message(), "init");
 		}

@@ -29,7 +29,7 @@
 
 DECLARE_COMPONENT_VERSION
 	( "S.T.A.L.K.E.R. Connection"
-	, "1.2"
+	, "1.4"
 	, "Connection to the game S.T.A.L.K.E.R.: Shadow of Chernobyl"
 	);
 
